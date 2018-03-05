@@ -10,6 +10,10 @@ interface Post {
   content: string;
 }
 
+interface PostId extends Post { 
+  id: string; 
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -17,7 +21,10 @@ interface Post {
 })
 export class AppComponent {
   postsCol: AngularFirestoreCollection<Post>;
-  posts: Observable<Post[]>;
+  posts: any;
+
+  postDoc: AngularFirestoreDocument<Post>;
+  post: Observable<Post>;
 
   title:string;
   content:string;
@@ -26,11 +33,24 @@ export class AppComponent {
 
   ngOnInit() {
     this.postsCol = this.afs.collection('posts');
-    this.posts = this.postsCol.valueChanges();
+   // this.posts = this.postsCol.valueChanges();
+    this.posts = this.postsCol.snapshotChanges()
+      .map(actions => {
+        return actions.map(a => {
+          const data = a.payload.doc.data() as Post;
+          const id = a.payload.doc.id;
+          return { id, data };
+        });
+      });
   }
 
   addPost() {
      //     this.afs.collection('posts').add({'title': this.title, 'content': this.content});
     this.afs.collection('posts').doc('my-custom-id').set({'title': this.title, 'content': this.content});
+  }
+
+    getPost(postId) {
+    this.postDoc = this.afs.doc('posts/'+postId);
+    this.post = this.postDoc.valueChanges();
   }
 }
