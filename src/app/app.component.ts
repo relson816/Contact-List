@@ -21,7 +21,7 @@ export class AppComponent {
 
   title:string;
   content:string;
-  
+
   constructor(private afs: AngularFirestore) {}
 
   ngOnInit() {
@@ -29,7 +29,8 @@ export class AppComponent {
     this.posts = this.postsCol.valueChanges();
   }
 
-    addPost() {
-    this.afs.collection('posts').add({'title': this.title, 'content': this.content});
+  addPost() {
+     //     this.afs.collection('posts').add({'title': this.title, 'content': this.content});
+    this.afs.collection('posts').doc('my-custom-id').set({'title': this.title, 'content': this.content});
   }
 }
