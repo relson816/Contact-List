@@ -5,13 +5,17 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
 
-interface Post {
-  title: string;
-  content: string;
+interface Detail {
+  firstname:string;
+  lastname:string;
+  phone:number;
+  mobile:number;
+  email:string;
+  address:string; 
 }
 
-interface PostId extends Post { 
-  id: string; 
+interface DetailId extends Detail { 
+  id:string;
 }
 
 @Component({
@@ -20,41 +24,45 @@ interface PostId extends Post {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  postsCol: AngularFirestoreCollection<Post>;
-  posts: any;
+  detailsCol: AngularFirestoreCollection<Detail>;
+  details: any;
 
-  postDoc: AngularFirestoreDocument<Post>;
-  post: Observable<Post>;
+  detailDoc: AngularFirestoreDocument<Detail>;
+  detail: Observable<Detail>;
 
-  title:string;
-  content:string;
+  firstname:string;
+  lastname:string;
+  phone:number;
+  mobile:number;
+  email:string;
+  address:string; 
 
   constructor(private afs: AngularFirestore) {}
 
   ngOnInit() {
-    this.postsCol = this.afs.collection('posts');
+    this.detailsCol = this.afs.collection('details');
    // this.posts = this.postsCol.valueChanges();
-    this.posts = this.postsCol.snapshotChanges()
+    this.details = this.detailsCol.snapshotChanges()
       .map(actions => {
         return actions.map(a => {
-          const data = a.payload.doc.data() as Post;
+          const data = a.payload.doc.data() as Detail;
           const id = a.payload.doc.id;
           return { id, data };
         });
       });
   }
 
-  addPost() {
+  addDetail() {
      //     this.afs.collection('posts').add({'title': this.title, 'content': this.content});
-    this.afs.collection('posts').doc('my-custom-id').set({'title': this.title, 'content': this.content});
+    this.afs.collection('details').doc('my-custom-id').set({'firstname': this.firstname, 'lastname': this.lastname, 'phone': this.phone, 'mobile': this.mobile, 'email': this.email, 'address': this.address});
   }
 
-    getPost(postId) {
-    this.postDoc = this.afs.doc('posts/'+postId);
-    this.post = this.postDoc.valueChanges();
+    getDetail(detailId) {
+    this.detailDoc = this.afs.doc('details/'+detailId);
+    this.detail = this.detailDoc.valueChanges();
   }
 
-    deletePost(postId) {
-    this.afs.doc('posts/'+postId).delete();
+    deleteDetail(detailId) {
+    this.afs.doc('details/'+detailId).delete();
   }
 }
